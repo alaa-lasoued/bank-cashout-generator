@@ -65,52 +65,66 @@ let transactions = [{
 
 function generateMassBankCashoutFile(transactionsList) {
 
-    let FileContent = ''
-    let lineLength = 128
+    let filename;
 
     // create a new empty ext file [transactions-dd-mm-yyyy.txt]
-    createTxsFile()
+    filename = createTxsFile();
 
-    transactions.map((transaction, i) => {
+    transactions.map((transaction) => {
         // append trnasaction details to txt file
-        appendTxToFile(transaction)
+        appendTxToFile(transaction,filename)
     })
 
+};
 
-    for (var i = 0; i < transactionsList.length; i++) {
-        for (var position = 0; position < lineLength; position++) {
+function appendTxToFile(transaction, fileName) {
 
-            if (PropPosition[position] && PropPosition[position] !== 'Filler') {
+    let lineLength = 128
+    let FileContent = ''
 
-                FileContent += transactionsList[i][PropPosition[position]]
-                position = position + (transactionsList[i][PropPosition[position]].length - 1)
+    for (var position = 0; position < lineLength; position++) {
 
-            } else {
+        if (PropPosition[position] && PropPosition[position] !== 'Filler') {
 
-                FileContent += ' '
+            FileContent += transaction[PropPosition[position]]
+            position = position + (transaction[PropPosition[position]].length - 1)
 
-            }
-
-            FileContent += '\n'
+        } else {
+            FileContent += ' '
         }
     }
 
+    FileContent += '\n'
 
+        //add new content
+        fs.appendFile(fileName, FileContent, (err) => {
+            if (err) console.log(err);
+            console.log("Successfully File appending.");
+        });
 
-    fs.writeFile('VIRAMEN.txt', FileContent, function (err) {
-        if (err) return console.log(err);
-        console.log('VIRMEN.txt Generated');
-    })
-}
+};
 
-appendTxToFile(transaction) {
-        
-}
-
-createTxsFile() {
+function createTxsFile() {
     // get today's date
+    let today = new Date();
+    let dd = String(today.getDate()).padStart(2, '0');
+    let mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+    let yyyy = today.getFullYear();
+
+    today = mm + '-' + dd + '-' + yyyy;
+
     // Create the file name
+
+    let fileName = `transactions-${today}.txt`
+
     // Create the file with fs
-}
+
+    fs.writeFile(fileName, '', function (err) {
+        if (err) throw err;
+        console.log(`${fileName} was generated`);
+    });
+
+    return fileName
+};
 
 generateMassBankCashoutFile(transactions)
