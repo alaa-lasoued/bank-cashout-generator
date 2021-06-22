@@ -1,30 +1,17 @@
 const fs = require('fs')
 
-
-
 let PropPosition = {
-    0:
-        'CodeE',
-    2:
-        'Matricule',
-    10:
-        'BankCode',
-    12:
-        'Filler',
-    28:
-        'NomPrénom',
-    58:
-        'Rib',
-    78:
-        'Libellé',
-    95:
-        'Montant',
-    105:
-        'Mois',
-    107:
-        'Année',
-    111:
-        'Filler'
+    0: 'CodeE',
+    2: 'Matricule',
+    10: 'BankCode',
+    12: 'Filler',
+    28: 'NomPrénom',
+    58: 'Rib',
+    78: 'Libellé',
+    95: 'Montant',
+    105: 'Mois',
+    107: 'Année',
+    111: 'Filler'
 }
 
 let transactions = [{
@@ -79,25 +66,32 @@ let transactions = [{
 function generateMassBankCashoutFile(transactionsList) {
 
     let FileContent = ''
-    let MaxlineLength = 128
+    let lineLength = 128
+
+    // create a new empty ext file [transactions-dd-mm-yyyy.txt]
+    createTxsFile()
+
+    transactions.map((transaction, i) => {
+        // append trnasaction details to txt file
+        appendTxToFile(transaction)
+    })
 
 
     for (var i = 0; i < transactionsList.length; i++) {
-        if (i) {
-            FileContent += '\n'
-        }
-        for (var EndLine = 0; EndLine < MaxlineLength; EndLine++) {
+        for (var position = 0; position < lineLength; position++) {
 
-            if (PropPosition[EndLine] && PropPosition[EndLine] !== 'Filler') {
+            if (PropPosition[position] && PropPosition[position] !== 'Filler') {
 
-                FileContent += transactionsList[i][PropPosition[EndLine]]
-                EndLine = EndLine + (transactionsList[i][PropPosition[EndLine]].length - 1)
+                FileContent += transactionsList[i][PropPosition[position]]
+                position = position + (transactionsList[i][PropPosition[position]].length - 1)
 
             } else {
 
                 FileContent += ' '
 
             }
+
+            FileContent += '\n'
         }
     }
 
@@ -107,6 +101,16 @@ function generateMassBankCashoutFile(transactionsList) {
         if (err) return console.log(err);
         console.log('VIRMEN.txt Generated');
     })
+}
+
+appendTxToFile(transaction) {
+        
+}
+
+createTxsFile() {
+    // get today's date
+    // Create the file name
+    // Create the file with fs
 }
 
 generateMassBankCashoutFile(transactions)
